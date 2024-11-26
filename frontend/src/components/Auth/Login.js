@@ -2,13 +2,32 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Usado para redirigir al usuario después del login
 
 const Login = () => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState(''); // Cambiado a email
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [formErrors, setFormErrors] = useState({});  // Errores de validación
+    const [backendError, setBackendError] = useState(''); // Error del backend
     const navigate = useNavigate();  // Para redirigir después de login exitoso
 
+    const validateForm = () => {
+        let errors = {};
+        if (!email || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
+            errors.email = "Por favor ingrese un correo electrónico válido.";
+        }
+        if (!password) {
+            errors.password = "La contraseña es obligatoria.";
+        }
+        return errors;
+    };
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const formErrors = validateForm();
+        
+        if (Object.keys(formErrors).length > 0) {
+            setFormErrors(formErrors);
+            return;  // Evita el envío si hay errores
+        }
 
         try {
             // Enviar las credenciales al backend
@@ -18,7 +37,7 @@ const Login = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username,
+                    email, // Enviamos email en lugar de username
                     password,
                 }),
             });
@@ -32,10 +51,12 @@ const Login = () => {
                 navigate('/home');
             } else {
                 // Mostrar el error devuelto por el backend
-                setError(data.error || 'Credenciales incorrectas');
+                setBackendError(data.error || 'Credenciales incorrectas');
+                setFormErrors({}); // Limpiar los errores de validación en caso de error del backend
             }
         } catch (err) {
-            setError('Hubo un error al conectar con el servidor');
+            setBackendError('Hubo un error al conectar con el servidor');
+            setFormErrors({}); // Limpiar los errores de validación en caso de error de conexión
         }
     };
 
@@ -47,15 +68,17 @@ const Login = () => {
     return (
         <div>
             <h2>Iniciar sesión</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
                 <div>
-                    <label>Usuario</label>
+                    <label>Correo electrónico</label>
                     <input 
-                        type="text" 
-                        placeholder="Ingrese su nombre de usuario"
-                        value={username} 
-                        onChange={(e) => setUsername(e.target.value)} 
+                        type="email" 
+                        placeholder="Ingrese su correo electrónico"
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                        required 
                     />
+                    {formErrors.email && <p style={{ color: 'red' }}>{formErrors.email}</p>}
                 </div>
                 <div>
                     <label>Contraseña</label>
@@ -64,9 +87,11 @@ const Login = () => {
                         placeholder="Ingrese su contraseña"
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)} 
+                        required
                     />
+                    {formErrors.password && <p style={{ color: 'red' }}>{formErrors.password}</p>}
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {backendError && <p style={{ color: 'red' }}>{backendError}</p>}
                 <button type="submit">Iniciar sesión</button>
             </form>
             <button onClick={handleRegister}>¿No tienes cuenta? Regístrate</button>
