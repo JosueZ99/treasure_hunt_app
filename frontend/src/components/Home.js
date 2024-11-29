@@ -30,14 +30,14 @@ const Home = () => {
                 height: '100%', 
                 bgcolor: 'background.default', 
                 color: 'text.primary', 
-                position: 'relative' 
+                position: 'relative',
             }}
         >
             {/* Contenido principal */}
             <Box sx={{ flex: '1 0 auto', p: 3, textAlign: 'center' }}>
                 {/* Título */}
                 <Typography variant="h4" sx={{ mb: 2 }}>
-                    Eco-Treasure Hunt
+                    EcoTreasure Hunt
                 </Typography>
 
                 {/* Instrucciones */}
@@ -93,6 +93,18 @@ const Home = () => {
                         />
                     </Slider>
                 </Box>
+
+                {/* Consejo ecológico */}
+                <Typography 
+                    variant="body1" 
+                    sx={{ 
+                        mt: 3, 
+                        fontWeight: 'bold',
+                        bgcolor: 'background.default',
+                    }}
+                >
+                    Consejo: Apaga las luces cuando no las necesites. Ahorrar energía ayuda a reducir la huella de carbono.
+                </Typography>
             </Box>
 
             {/* Iconos flotantes para acciones */}
@@ -101,7 +113,7 @@ const Home = () => {
                 aria-label="Leaderboard" 
                 sx={{ 
                     position: 'fixed', 
-                    bottom: 16, 
+                    bottom: { xs: 60, md: 90 },
                     left: 16 
                 }}
             >
@@ -113,7 +125,7 @@ const Home = () => {
                 aria-label="QR Scanner" 
                 sx={{ 
                     position: 'fixed', 
-                    bottom: 16, 
+                    bottom: { xs: 60, md: 90 },
                     right: 16 
                 }}
             >
