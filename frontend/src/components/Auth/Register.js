@@ -1,31 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box, Button, TextField, Typography, Paper, IconButton } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const Register = () => {
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
-    const [formErrors, setFormErrors] = useState({});  // Errores de validación
-    const [backendError, setBackendError] = useState(''); // Error del backend
+    const [formErrors, setFormErrors] = useState({});
+    const [backendError, setBackendError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const navigate = useNavigate();  // Para redirigir al usuario después de un registro exitoso
+    const navigate = useNavigate();
 
-    // Validar el formulario antes de enviarlo
     const validateForm = () => {
         let errors = {};
+
         if (!firstName.trim()) {
             errors.firstName = "El nombre es obligatorio.";
         }
         if (!lastName.trim()) {
             errors.lastName = "El apellido es obligatorio.";
         }
-        if (!email || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
-            errors.email = "Por favor ingrese un correo electrónico válido.";
+        if (!email) {
+            errors.email = "El correo electrónico es obligatorio.";
+        } else if (!/^[A-Z0-9._%+-]+@puce\.edu\.ec$/i.test(email)) {
+            errors.email = "El correo debe pertenecer al dominio @puce.edu.ec.";
         }
         if (password.length < 6) {
             errors.password = "La contraseña debe tener al menos 6 caracteres.";
         }
+
         return errors;
     };
 
@@ -36,15 +41,14 @@ const Register = () => {
 
         if (Object.keys(formErrors).length > 0) {
             setFormErrors(formErrors);
-            return;  // Evita el envío si hay errores
+            return;
         }
 
-        // Limpiar cualquier mensaje de error previo
         setBackendError('');
         setSuccessMessage('');
 
         try {
-            const response = await fetch('http://localhost:8000/api/register/', {
+            const response = await fetch('http://192.168.100.60:8000/api/register/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,14 +64,12 @@ const Register = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Si el registro es exitoso, mostrar un mensaje de éxito
                 setSuccessMessage('Registro exitoso. Ahora puedes iniciar sesión.');
-                setFormErrors({}); // Limpiar errores de validación en caso de éxito
+                setFormErrors({});
                 setTimeout(() => {
                     navigate('/login');
                 }, 2000);
             } else {
-                // Si hay un error, mostrar el mensaje de error
                 setBackendError(data.error || 'Hubo un error al registrar la cuenta.');
             }
         } catch (err) {
@@ -75,59 +77,118 @@ const Register = () => {
         }
     };
 
+    const handleGoBack = () => {
+        navigate('/login');
+    };
+
     return (
-        <div>
-            <h2>Registro de cuenta</h2>
-            <form onSubmit={handleSubmit} noValidate>
-                <div>
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        placeholder="Ingrese su correo electrónico"
+        <Box 
+            sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                flex: '1 0 auto', // Permite que el contenido principal se ajuste dinámicamente
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                px: 2, 
+                py: 4, 
+                bgcolor: 'background.default' 
+            }}
+        >
+            <Paper 
+                elevation={3} 
+                sx={{ 
+                    p: 4, 
+                    maxWidth: 400, 
+                    width: '100%', 
+                    textAlign: 'center', 
+                    bgcolor: 'background.paper', 
+                    color: 'text.primary' 
+                }}
+            >
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, position: 'relative' }}>
+                    <IconButton 
+                        onClick={handleGoBack} 
+                        sx={{ position: 'absolute', left: 0 }}
+                    >
+                        <ArrowBackIcon />
+                    </IconButton>
+                    <Box sx={{ flexGrow: 1 }}>
+                        <Typography variant="h5" sx={{ textAlign: 'center' }}>
+                            Registro de cuenta
+                        </Typography>
+                    </Box>
+                </Box>
+
+                <form onSubmit={handleSubmit} noValidate>
+                    <TextField
+                        fullWidth
+                        label="Correo electrónico"
+                        variant="outlined"
+                        margin="dense"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        required
+                        error={Boolean(formErrors.email)}
+                        helperText={formErrors.email}
                     />
-                    {formErrors.email && <p style={{ color: 'red' }}>{formErrors.email}</p>}
-                </div>
-                <div>
-                    <label>Nombre</label>
-                    <input
-                        type="text"
-                        placeholder="Ingrese su nombre"
+
+                    <TextField
+                        fullWidth
+                        label="Nombre"
+                        variant="outlined"
+                        margin="dense"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        required
+                        error={Boolean(formErrors.firstName)}
+                        helperText={formErrors.firstName}
                     />
-                    {formErrors.firstName && <p style={{ color: 'red' }}>{formErrors.firstName}</p>}
-                </div>
-                <div>
-                    <label>Apellido</label>
-                    <input
-                        type="text"
-                        placeholder="Ingrese su apellido"
+
+                    <TextField
+                        fullWidth
+                        label="Apellido"
+                        variant="outlined"
+                        margin="dense"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        required
+                        error={Boolean(formErrors.lastName)}
+                        helperText={formErrors.lastName}
                     />
-                    {formErrors.lastName && <p style={{ color: 'red' }}>{formErrors.lastName}</p>}
-                </div>
-                <div>
-                    <label>Contraseña</label>
-                    <input
+
+                    <TextField
+                        fullWidth
+                        label="Contraseña"
                         type="password"
-                        placeholder="Ingrese su contraseña"
+                        variant="outlined"
+                        margin="dense"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
+                        error={Boolean(formErrors.password)}
+                        helperText={formErrors.password}
                     />
-                    {formErrors.password && <p style={{ color: 'red' }}>{formErrors.password}</p>}
-                </div>
-                {backendError && <p style={{ color: 'red' }}>{backendError}</p>}
-                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-                <button type="submit">Registrar</button>
-            </form>
-        </div>
+
+                    {backendError && (
+                        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                            {backendError}
+                        </Typography>
+                    )}
+
+                    {successMessage && (
+                        <Typography color="success.main" variant="body2" sx={{ mt: 1 }}>
+                            {successMessage}
+                        </Typography>
+                    )}
+
+                    <Button 
+                        type="submit" 
+                        variant="contained" 
+                        color="primary" 
+                        fullWidth 
+                        sx={{ mt: 2 }}
+                    >
+                        Registrar
+                    </Button>
+                </form>
+            </Paper>
+        </Box>
     );
 };
 

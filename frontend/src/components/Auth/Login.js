@@ -1,45 +1,46 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Usado para redirigir al usuario después del login
+import { useNavigate } from 'react-router-dom';
+import { Box, Button, TextField, Typography, Paper } from '@mui/material';
 
-const Login = () => {
-    const [email, setEmail] = useState(''); // Cambiado a email
+const Login = ({ onAuthChange }) => {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [formErrors, setFormErrors] = useState({});  // Errores de validación
-    const [backendError, setBackendError] = useState(''); // Error del backend
-    const navigate = useNavigate();  // Para redirigir después de login exitoso
+    const [formErrors, setFormErrors] = useState({});
+    const [backendError, setBackendError] = useState('');
+    const navigate = useNavigate();
 
     const validateForm = () => {
         let errors = {};
-        if (!email || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
-            errors.email = "Por favor ingrese un correo electrónico válido.";
+
+        if (!email) {
+            errors.email = "El correo electrónico es obligatorio.";
+        } else if (!/^[A-Z0-9._%+-]+@puce\.edu\.ec$/i.test(email)) {
+            errors.email = "El correo debe pertenecer al dominio @puce.edu.ec.";
         }
+
         if (!password) {
             errors.password = "La contraseña es obligatoria.";
         }
+
         return errors;
     };
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const formErrors = validateForm();
-        
         if (Object.keys(formErrors).length > 0) {
             setFormErrors(formErrors);
-            return;  // Evita el envío si hay errores
+            return;
         }
 
         try {
-            // Enviar las credenciales al backend
-            const response = await fetch('http://localhost:8000/api/login/', {
+            const response = await fetch('http://192.168.100.60:8000/api/login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    email, // Enviamos email en lugar de username
-                    password,
-                }),
+                body: JSON.stringify({ email, password }),
             });
 
             const data = await response.json();
@@ -47,55 +48,106 @@ const Login = () => {
             if (response.ok) {
                 // Guardar el token en localStorage
                 localStorage.setItem('access_token', data.access_token);
+
+                // Notificar el cambio de autenticación
+                if (onAuthChange) {
+                    onAuthChange(); // Llama a onAuthChange para recargar los datos del usuario
+                }
+
                 // Redirigir al usuario a la página principal
                 navigate('/home');
             } else {
-                // Mostrar el error devuelto por el backend
                 setBackendError(data.error || 'Credenciales incorrectas');
-                setFormErrors({}); // Limpiar los errores de validación en caso de error del backend
+                setFormErrors({});
             }
         } catch (err) {
             setBackendError('Hubo un error al conectar con el servidor');
-            setFormErrors({}); // Limpiar los errores de validación en caso de error de conexión
+            setFormErrors({});
         }
     };
 
-    // Redirigir a la página de registro
     const handleRegister = () => {
-        navigate('/register'); // Asumimos que tienes una ruta de registro en el frontend
+        navigate('/register');
     };
 
     return (
-        <div>
-            <h2>Iniciar sesión</h2>
-            <form onSubmit={handleSubmit} noValidate>
-                <div>
-                    <label>Correo electrónico</label>
-                    <input 
-                        type="email" 
-                        placeholder="Ingrese su correo electrónico"
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        required 
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: '1 0 auto', // Permite que el contenedor principal ocupe el espacio restante
+                justifyContent: 'center',
+                alignItems: 'center',
+                px: 2, // Padding lateral para dispositivos pequeños
+                py: 4 // Padding superior e inferior para evitar que el contenido esté pegado
+            }}
+        >
+            <Paper
+                elevation={3}
+                sx={{
+                    p: 3,
+                    maxWidth: 400,
+                    width: '100%',
+                    textAlign: 'center',
+                    bgcolor: 'background.paper',
+                    color: 'text.primary'
+                }}
+            >
+                <Typography variant="h5" sx={{ mb: 2 }}>
+                    Iniciar Sesión
+                </Typography>
+
+                <form onSubmit={handleSubmit} noValidate>
+                    <TextField
+                        fullWidth
+                        label="Correo electrónico"
+                        variant="outlined"
+                        margin="dense"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        error={Boolean(formErrors.email)}
+                        helperText={formErrors.email}
                     />
-                    {formErrors.email && <p style={{ color: 'red' }}>{formErrors.email}</p>}
-                </div>
-                <div>
-                    <label>Contraseña</label>
-                    <input 
-                        type="password" 
-                        placeholder="Ingrese su contraseña"
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        required
+
+                    <TextField
+                        fullWidth
+                        label="Contraseña"
+                        type="password"
+                        variant="outlined"
+                        margin="dense"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        error={Boolean(formErrors.password)}
+                        helperText={formErrors.password}
                     />
-                    {formErrors.password && <p style={{ color: 'red' }}>{formErrors.password}</p>}
-                </div>
-                {backendError && <p style={{ color: 'red' }}>{backendError}</p>}
-                <button type="submit">Iniciar sesión</button>
-            </form>
-            <button onClick={handleRegister}>¿No tienes cuenta? Regístrate</button>
-        </div>
+
+                    {backendError && (
+                        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                            {backendError}
+                        </Typography>
+                    )}
+
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                    >
+                        Iniciar Sesión
+                    </Button>
+                </form>
+
+                <Button
+                    onClick={handleRegister}
+                    variant="text"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                >
+                    ¿No tienes cuenta? ¡Regístrate y participa!
+                </Button>
+            </Paper>
+        </Box>
     );
 };
 
