@@ -2,8 +2,11 @@
 **Explora, resuelve y aprende mientras recorres el campus de la PUCE** 
 
 Aplicación creada para el DevChallenge - Nov 2024
+
 **Tecnología Superior en Desarrollo de Software**
+
 **Proyectos de Software - Bases de Datos II - Desarrollo Web**
+
 Autores: **Josue Zambrano, Alison Carrión , Nelson Allauca**
 
 
