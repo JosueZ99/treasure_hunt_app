@@ -29,6 +29,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Cargar las variables del archivo .env
+load_dotenv()
+
+# Configurar la URL del backend
+BACKEND_URL = os.getenv('BACKEND_URL')
 
 # Application definition
 
@@ -91,11 +96,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'treasure_hunt_db',
-        'USER': 'postgres',       
-        'PASSWORD': '12345', 
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
     }
 }
 
@@ -142,9 +147,3 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'api.CustomUser'
-
-# Cargar las variables del archivo .env
-load_dotenv()
-
-# Configurar la URL del backend
-BACKEND_URL = os.getenv('BACKEND_URL')
