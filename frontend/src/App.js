@@ -13,6 +13,7 @@ function App() {
   const [userName, setUserName] = useState('');
   const [userPoints, setUserPoints] = useState(0);
   const [loading, setLoading] = useState(true);
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const fetchUserData = useCallback(async () => {
     setLoading(true);
@@ -22,7 +23,7 @@ function App() {
         throw new Error('No hay token disponible.');
       }
 
-      const response = await fetch('http://192.168.100.60:8000/api/user-data/', {
+      const response = await fetch(`${backendUrl}/api/user-data/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +45,7 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [backendUrl]);
 
   useEffect(() => {
     fetchUserData();

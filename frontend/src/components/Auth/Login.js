@@ -8,6 +8,7 @@ const Login = ({ onAuthChange }) => {
     const [formErrors, setFormErrors] = useState({});
     const [backendError, setBackendError] = useState('');
     const navigate = useNavigate();
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
     const validateForm = () => {
         let errors = {};
@@ -35,7 +36,7 @@ const Login = ({ onAuthChange }) => {
         }
 
         try {
-            const response = await fetch('http://192.168.100.60:8000/api/login/', {
+            const response = await fetch(`${backendUrl}/api/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

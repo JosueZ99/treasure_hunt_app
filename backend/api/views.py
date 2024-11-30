@@ -35,7 +35,7 @@ def register_user(request):
 # Login de usuario con JWTs
 @api_view(['POST'])
 def login_user(request):
-    email = request.data.get('email')  # Usamos email para autenticar
+    email = request.data.get('email').lower()  # Usamos email para autenticar
     password = request.data.get('password')
 
     user = authenticate(request, username=email, password=password)  # Autenticación por email

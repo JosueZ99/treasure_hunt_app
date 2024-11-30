@@ -12,6 +12,7 @@ const Register = () => {
     const [backendError, setBackendError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
     const validateForm = () => {
         let errors = {};
@@ -48,7 +49,7 @@ const Register = () => {
         setSuccessMessage('');
 
         try {
-            const response = await fetch('http://192.168.100.60:8000/api/register/', {
+            const response = await fetch(`${backendUrl}/api/register/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -69,8 +70,11 @@ const Register = () => {
                 setTimeout(() => {
                     navigate('/login');
                 }, 2000);
+            } else if (response.status === 400 && data.error) {
+                // Aquí manejamos el caso en que haya un error del backend específico
+                setBackendError(data.error);
             } else {
-                setBackendError(data.error || 'Hubo un error al registrar la cuenta.');
+                setBackendError('Hubo un error al registrar la cuenta.');
             }
         } catch (err) {
             setBackendError('Hubo un error al conectar con el servidor');
