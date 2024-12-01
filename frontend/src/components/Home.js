@@ -13,8 +13,8 @@ import eco2Image from '../assets/images/carousel/eco2.jpg';
 import eco3Image from '../assets/images/carousel/eco3.jpg';
 
 const Home = () => {
-    // Estado para mostrar o no el ranking
     const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [currentSlide, setCurrentSlide] = useState(0); // Índice actual del carrusel
 
     // Funciones para alternar entre vistas
     const handleViewLeaderboard = () => {
@@ -33,7 +33,15 @@ const Home = () => {
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
+        beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex), // Actualiza el índice
     };
+
+    // Frases para cada imagen
+    const ecoTips = [
+        "Planta un árbol: ¡puede absorber hasta 22 kg de CO2 por año!",
+        "Reduce, reutiliza, recicla: cada acción cuenta.",
+        "Elige transporte sostenible: camina, usa bicicleta o transporte público."
+    ];
 
     return (
         <Box
@@ -69,7 +77,7 @@ const Home = () => {
                             </Typography>
                         </Paper>
 
-                        {/* Carrusel */}
+                        {/* Carrusel de imágenes */}
                         <Box
                             sx={{
                                 mb: 3,
@@ -112,16 +120,18 @@ const Home = () => {
                             </Slider>
                         </Box>
 
-                        {/* Consejo ecológico */}
+                        {/* Carrusel de frases sincronizado */}
                         <Typography
                             variant="body1"
                             sx={{
                                 mt: 3,
                                 fontWeight: 'bold',
                                 bgcolor: 'background.default',
+                                color: 'primary.main',
+                                textAlign: 'center',
                             }}
                         >
-                            Consejo: Apaga las luces cuando no las necesites. Ahorrar energía ayuda a reducir la huella de carbono.
+                            {ecoTips[currentSlide]} {/* Muestra la frase correspondiente al índice */}
                         </Typography>
                     </Box>
 
