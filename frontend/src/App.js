@@ -11,6 +11,8 @@ import Register from './components/Auth/Register';
 import { refreshAccessToken } from './tokenUtils';
 import { jwtDecode } from 'jwt-decode';
 
+//Test commit de la nueva rama
+
 function App() {
   const [userName, setUserName] = useState('');
   const [userPoints, setUserPoints] = useState(0);
