@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, TextField, Typography, Paper, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const Register = () => {
+const Register = ({ onAuthChange }) => {
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
     const [formErrors, setFormErrors] = useState({});
     const [backendError, setBackendError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
@@ -37,17 +36,13 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const formErrors = validateForm();
-
         if (Object.keys(formErrors).length > 0) {
             setFormErrors(formErrors);
             return;
         }
-
-        setBackendError('');
-        setSuccessMessage('');
-
+    
         try {
             const response = await fetch(`${backendUrl}/api/register/`, {
                 method: 'POST',
@@ -61,25 +56,22 @@ const Register = () => {
                     password,
                 }),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.ok) {
-                setSuccessMessage('Registro exitoso. Ahora puedes iniciar sesión.');
-                setFormErrors({});
-                setTimeout(() => {
-                    navigate('/login');
-                }, 2000);
-            } else if (response.status === 400 && data.error) {
-                // Aquí manejamos el caso en que haya un error del backend específico
-                setBackendError(data.error);
+                // Guarda los tokens en localStorage
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+                onAuthChange(); // Notifica que ha habido un cambio en la autenticación
+                navigate('/home');
             } else {
-                setBackendError('Hubo un error al registrar la cuenta.');
+                setBackendError(data.error || 'Hubo un error al registrar la cuenta.');
             }
         } catch (err) {
             setBackendError('Hubo un error al conectar con el servidor');
         }
-    };
+    };    
 
     const handleGoBack = () => {
         navigate('/login');
@@ -172,12 +164,6 @@ const Register = () => {
                     {backendError && (
                         <Typography color="error" variant="body2" sx={{ mt: 1 }}>
                             {backendError}
-                        </Typography>
-                    )}
-
-                    {successMessage && (
-                        <Typography color="success.main" variant="body2" sx={{ mt: 1 }}>
-                            {successMessage}
                         </Typography>
                     )}
 

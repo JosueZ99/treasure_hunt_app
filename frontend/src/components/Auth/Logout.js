@@ -5,18 +5,11 @@ const Logout = ({ onAuthChange }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Eliminar el token de localStorage
         localStorage.removeItem('access_token');
-
-        // Notificar el cambio de autenticación
-        if (onAuthChange) {
-            onAuthChange(false); // Indica que el usuario ha cerrado sesión
-        }
-
-        // Redirigir al login
+        localStorage.removeItem('refresh_token');
         navigate('/login');
-    }, [navigate, onAuthChange]);
-
+    }, [navigate]);
+    
     return <div>Logging out...</div>; // Puede mostrar un mensaje mientras redirige
 };
 

@@ -8,19 +8,40 @@ import Logout from './components/Auth/Logout';
 import Home from './components/Home';
 import PrivateRoute from './components/PrivateRoute';
 import Register from './components/Auth/Register';
+import { refreshAccessToken } from './tokenUtils';
+import { jwtDecode } from 'jwt-decode';
 
 function App() {
   const [userName, setUserName] = useState('');
   const [userPoints, setUserPoints] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [redirectToLogin, setRedirectToLogin] = useState(false);
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
+  const isTokenExpired = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp < currentTime;
+    } catch (error) {
+      return true; // En caso de error, asumimos que el token está expirado
+    }
+  };
 
   const fetchUserData = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        throw new Error('No hay token disponible.');
+      let token = localStorage.getItem('access_token');
+
+      if (!token || isTokenExpired(token)) {
+        // Intentar renovar el token si está expirado
+        try {
+          token = await refreshAccessToken();
+        } catch (error) {
+          console.error('No se pudo renovar el token:', error);
+          setRedirectToLogin(true);
+          return;
+        }
       }
 
       const response = await fetch(`${backendUrl}/api/user-data/`, {
@@ -35,13 +56,14 @@ function App() {
         const data = await response.json();
         setUserName(data.name);
         setUserPoints(data.points);
+        setRedirectToLogin(false); // El usuario está autenticado, no redirigir
       } else {
         console.error('Error al obtener los datos del usuario.');
+        setRedirectToLogin(true);
       }
     } catch (error) {
       console.error('Error al conectar con el servidor:', error);
-      setUserName('');
-      setUserPoints(0);
+      setRedirectToLogin(true);
     } finally {
       setLoading(false);
     }
@@ -80,21 +102,19 @@ function App() {
       <Router>
         <Layout userName={userName} userPoints={userPoints}>
           <Routes>
-            <Route
-              path="/login"
-              element={<Login onAuthChange={handleAuthChange} />}
-            />
-            <Route
-              path="/logout"
-              element={<Logout onAuthChange={handleAuthChange} />}
-            />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login onAuthChange={handleAuthChange} />} />
+            <Route path="/logout" element={<Logout onAuthChange={handleAuthChange} />} />
+            <Route path="/register" element={<Register onAuthChange={handleAuthChange} />} />
             <Route
               path="/home"
               element={
-                <PrivateRoute>
-                  <Home />
-                </PrivateRoute>
+                redirectToLogin ? (
+                  <Navigate to="/login" replace />
+                ) : (
+                  <PrivateRoute>
+                    <Home />
+                  </PrivateRoute>
+                )
               }
             />
             <Route path="*" element={<Navigate to="/home" />} />

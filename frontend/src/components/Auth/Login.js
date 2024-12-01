@@ -7,6 +7,7 @@ const Login = ({ onAuthChange }) => {
     const [password, setPassword] = useState('');
     const [formErrors, setFormErrors] = useState({});
     const [backendError, setBackendError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
@@ -28,42 +29,39 @@ const Login = ({ onAuthChange }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setIsSubmitting(true);
+    
         const formErrors = validateForm();
         if (Object.keys(formErrors).length > 0) {
             setFormErrors(formErrors);
+            setIsSubmitting(false);
             return;
         }
-
+    
         try {
-            const response = await fetch(`${backendUrl}/api/login/`, {
+            const response = await fetch(`${backendUrl}/api/token/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ email, password }),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.ok) {
-                // Guardar el token en localStorage
-                localStorage.setItem('access_token', data.access_token);
-
-                // Notificar el cambio de autenticación
-                if (onAuthChange) {
-                    onAuthChange(); // Llama a onAuthChange para recargar los datos del usuario
-                }
-
-                // Redirigir al usuario a la página principal
-                navigate('/home');
+                // Guarda los tokens en localStorage
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+                onAuthChange(); // Asegura que el estado de autenticación esté actualizado
+                navigate('/home'); // Redirige al home
             } else {
                 setBackendError(data.error || 'Credenciales incorrectas');
-                setFormErrors({});
             }
         } catch (err) {
             setBackendError('Hubo un error al conectar con el servidor');
-            setFormErrors({});
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -80,7 +78,8 @@ const Login = ({ onAuthChange }) => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 px: 2, // Padding lateral para dispositivos pequeños
-                py: 4 // Padding superior e inferior para evitar que el contenido esté pegado
+                py: 4, // Padding superior e inferior para evitar que el contenido esté pegado
+                bgcolor: 'background.default',
             }}
         >
             <Paper
@@ -91,7 +90,7 @@ const Login = ({ onAuthChange }) => {
                     width: '100%',
                     textAlign: 'center',
                     bgcolor: 'background.paper',
-                    color: 'text.primary'
+                    color: 'text.primary',
                 }}
             >
                 <Typography variant="h5" sx={{ mb: 2 }}>
@@ -134,8 +133,9 @@ const Login = ({ onAuthChange }) => {
                         color="primary"
                         fullWidth
                         sx={{ mt: 2 }}
+                        disabled={isSubmitting} // Deshabilita el botón mientras se envía la solicitud
                     >
-                        Iniciar Sesión
+                        {isSubmitting ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                     </Button>
                 </form>
 
