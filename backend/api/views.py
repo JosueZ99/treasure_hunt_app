@@ -73,3 +73,18 @@ def get_user_data(request):
             "points": points,
         })
     return Response({"error": "No autenticado"}, status=401)
+
+
+@api_view(['GET'])
+def get_leaderboard(request):
+    leaderboard_data = Leaderboard.objects.select_related('user').order_by('-total_points')  # Orden descendente por puntos
+    ranking = [
+        {
+            "rank": idx + 1,
+            "name": f"{entry.user.first_name} {entry.user.last_name}",
+            "email": entry.user.email,
+            "points": entry.total_points,
+        }
+        for idx, entry in enumerate(leaderboard_data)
+    ]
+    return Response(ranking, status=status.HTTP_200_OK)

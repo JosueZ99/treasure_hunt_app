@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from api.views import get_leaderboard
 
 urlpatterns = [
     path('login/', views.login_user, name='login'),
@@ -8,4 +9,5 @@ urlpatterns = [
     path('user-data/', views.get_user_data, name='user-data'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('leaderboard/', get_leaderboard, name='get_leaderboard'),
 ]
