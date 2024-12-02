@@ -8,9 +8,10 @@ import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import Leaderboard from './Leaderboard';
 
 // Importar imágenes
-import ecoImage from '../assets/images/carousel/eco.jpg';
+import eco1Image from '../assets/images/carousel/eco1.jpg';
 import eco2Image from '../assets/images/carousel/eco2.jpg';
 import eco3Image from '../assets/images/carousel/eco3.jpg';
+import eco4Image from '../assets/images/carousel/eco4.jpg';
 
 const Home = () => {
     const [showLeaderboard, setShowLeaderboard] = useState(false);
@@ -38,9 +39,11 @@ const Home = () => {
 
     // Frases para cada imagen
     const ecoTips = [
-        "Planta un árbol: ¡puede absorber hasta 22 kg de CO2 por año!",
-        "Reduce, reutiliza, recicla: cada acción cuenta.",
-        "Elige transporte sostenible: camina, usa bicicleta o transporte público."
+        "Evita la deforestación. Cada árbol en Ecuador puede capturar hasta 22 kg de CO₂ al año.",
+        "Usa transporte público o bicicleta. En Quito, si más personas usaran la bicicleta, se podría reducir hasta un 15% de las emisiones de CO₂ generadas por el transporte privado, ayudando a cuidar el aire.",
+        "Apoya la agroecología ecuatoriana. Los cultivos sostenibles generan menos emisiones y cuidan la biodiversidad.",
+        "El Parque Nacional Yasuní es uno de los más biodiversos del mundo. Evita plásticos para proteger su vida silvestre."
+
     ];
 
     return (
@@ -89,7 +92,7 @@ const Home = () => {
                             <Slider {...carouselSettings}>
                                 <Box
                                     component="img"
-                                    src={ecoImage}
+                                    src={eco1Image}
                                     alt="Imagen 1"
                                     sx={{
                                         width: '100%',
@@ -111,6 +114,16 @@ const Home = () => {
                                     component="img"
                                     src={eco3Image}
                                     alt="Imagen 3"
+                                    sx={{
+                                        width: '100%',
+                                        height: { xs: '200px', sm: '300px', md: '400px' },
+                                        objectFit: 'cover'
+                                    }}
+                                />
+                                <Box
+                                    component="img"
+                                    src={eco4Image}
+                                    alt="Imagen 4"
                                     sx={{
                                         width: '100%',
                                         height: { xs: '200px', sm: '300px', md: '400px' },
