@@ -14,7 +14,6 @@ export const refreshAccessToken = async () => {
         },
         body: JSON.stringify({ refresh: refreshToken }),
       });
-  
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('access_token', data.access);
@@ -23,7 +22,10 @@ export const refreshAccessToken = async () => {
         console.error('Error al renovar el access token.');
         throw new Error('Error al renovar el access token');
       }
-    } catch (error) {
+    } 
+    
+    catch (error) 
+    {
       console.error('Error al conectar con el servidor:', error);
       throw error; // Lanza el error para que la lógica en App.js lo maneje
     }
