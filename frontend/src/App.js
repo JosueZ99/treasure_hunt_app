@@ -10,7 +10,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Register from './components/Auth/Register';
 import { refreshAccessToken } from './tokenUtils';
 import { jwtDecode } from 'jwt-decode';
-import Administrator,{saludo} from './components/Auth/Administrator';
+import Administrator,{} from './components/Auth/Administrator';
 
 function App() {
   const [userName, setUserName] = useState('');

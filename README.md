@@ -149,3 +149,11 @@ Para contribuir al proyecto:
 4. Haz push a la rama (`git push origin feature/nueva-funcionalidad`).
 5. Abre un Pull Request.
 
+## Video Explicativo 
+
+Hola a todos,en este video, vamos a explorar las herramientas que utilizamos para construir esta aplicación, 
+su estructura o arquitectura, y también veremos la funcionalidad principal de nuestra plataforma. 
+Este proyecto tiene como objetivo incentivar a los estudiantes a participar en una aventura ambiental en el campus,
+ayudándonos a todos a cuidar del medio ambiente mientras nos divertimos.
+
+- Enlace adicinal a youtube:https://youtu.be/KF-ISWN4Qac?si=lT8phZY1GthNj21l
