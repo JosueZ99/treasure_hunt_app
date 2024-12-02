@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import QrScanner from 'react-qr-scanner';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Fab, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Ícono para el botón flotante
 
 const ScanQR = () => {
     const navigate = useNavigate();
@@ -86,37 +87,76 @@ const ScanQR = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '100vh',
-                bgcolor: 'background.default',
+                height: '60vh',
+                bgcolor: 'linear-gradient(135deg, #E3F2FD, #FFFFFF)', // Fondo con degradado
                 color: 'text.primary',
                 p: 3,
             }}
         >
-            <Typography variant="h5" sx={{ mb: 2 }}>
+            <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#1E88E5' }}>
                 Escanea el Código QR
+            </Typography>
+            <Typography variant="h5" sx={{ mb: 4, color: '#FFFFFF' }}>
+                Alinea el código QR dentro del recuadro para comenzar
             </Typography>
             
             {isCameraAvailable ? (
-                <QrScanner
-                    delay={300}
-                    style={{ height: 300, width: 400 }}
-                    onError={handleError}
-                    onScan={handleScan}
-                />
+                <Box
+                    sx={{
+                        width: '300px',
+                        height: '300px',
+                        borderRadius: '15px',
+                        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+                        overflow: 'hidden',
+                        position: 'relative',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        bgcolor: 'background.paper'
+                    }}
+                >
+                    {isScanning && (
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                zIndex: 10,
+                                width: '100%',
+                                height: '100%',
+                                bgcolor: 'rgba(255, 255, 255, 0.7)',
+                            }}
+                        >
+                            <CircularProgress sx={{ color: '#1E88E5' }} />
+                        </Box>
+                    )}
+                    <QrScanner
+                        delay={300}
+                        style={{ height: '100%', width: '100%' }}
+                        onError={handleError}
+                        onScan={handleScan}
+                    />
+                </Box>
             ) : (
                 <Typography variant="body1" color="error" sx={{ mb: 2 }}>
                     La cámara no está disponible. Por favor, habilita los permisos o verifica la compatibilidad de tu navegador.
                 </Typography>
             )}
             
-            <Button
-                variant="contained"
-                color="secondary"
+            <Fab
+                color="primary"
+                sx={{
+                    position: 'fixed',
+                    bottom: 60,
+                    right: 16,
+                    backgroundColor: '#43A047', // Verde para el botón flotante
+                    '&:hover': { backgroundColor: '#2E7D32' }, // Verde más oscuro al pasar el mouse
+                }}
                 onClick={() => navigate('/home')}
-                sx={{ mt: 3 }}
             >
-                Regresar
-            </Button>
+                <ArrowBackIcon /> {/* Icono para regresar */}
+            </Fab>
         </Box>
     );
 };

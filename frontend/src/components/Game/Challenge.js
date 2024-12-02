@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Typography, Button, CircularProgress, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, RadioGroup, FormControlLabel, Radio, Fab } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const Challenge = () => {
     const { token } = useParams();
@@ -175,6 +176,19 @@ const Challenge = () => {
                             />
                         ))}
                     </RadioGroup>
+                    <Fab
+                        color="primary"
+                        sx={{
+                            position: 'fixed',
+                            bottom: 60,
+                            right: 16,
+                            backgroundColor: '#43A047', // Verde para el botón flotante
+                            '&:hover': { backgroundColor: '#2E7D32' }, // Verde más oscuro al pasar el mouse
+                        }}
+                        onClick={() => navigate('/home')}
+                    >
+                        <ArrowBackIcon /> {/* Icono para regresar */}
+                    </Fab>
                     {!isAnswered ? (
                         <Button
                             variant="contained"

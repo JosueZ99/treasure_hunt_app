@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Typography, CircularProgress, LinearProgress, List, ListItem, Fab } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Ícono para el botón flotante
 
@@ -6,14 +7,38 @@ const Leaderboard = ({ onBack, currentUser }) => {
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const backendUrl = process.env.REACT_APP_BACKEND_URL; // Obtenemos backendUrl de las variables de entorno
 
     // Obtener datos del ranking
     const fetchLeaderboard = async () => {
+        const token = localStorage.getItem('access_token');
+        
+        // Verificar si el token está disponible
+        if (!token) {
+            console.error("Token no encontrado. Redirigiendo al login.");
+            navigate('/login');
+            return;
+        }
+
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/leaderboard/');
+            const response = await fetch(`${backendUrl}/api/leaderboard/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 401) {
+                console.error("Token no válido o expirado. Redirigiendo al login.");
+                navigate('/login');
+                return;
+            }
+
             if (!response.ok) {
                 throw new Error('Error al obtener los datos del ranking.');
             }
+
             const data = await response.json();
             setPlayers(data);
         } catch (err) {
@@ -72,7 +97,7 @@ const Leaderboard = ({ onBack, currentUser }) => {
                                 key={player.rank}
                                 sx={{
                                     backgroundColor: currentUser === player.name ? '#FFE082' : '#FFFFFF', // Fondo amarillo suave si es el usuario actual
-                                    borderRadius: '15px', 
+                                    borderRadius: '15px',
                                     mb: 2,
                                     p: 2,
                                     boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Sombra más suave
@@ -113,12 +138,12 @@ const Leaderboard = ({ onBack, currentUser }) => {
                 color="primary"
                 sx={{
                     position: 'fixed',
-                    bottom: 16,
+                    bottom: 60,
                     right: 16,
                     backgroundColor: '#43A047', // Verde para el botón flotante
                     '&:hover': { backgroundColor: '#2E7D32' }, // Verde más oscuro al pasar el mouse
                 }}
-                onClick={onBack}
+                onClick={() => navigate('/home')}
             >
                 <ArrowBackIcon /> {/* Icono para regresar */}
             </Fab>

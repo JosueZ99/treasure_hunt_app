@@ -10,8 +10,9 @@ import PrivateRoute from './components/PrivateRoute';
 import Register from './components/Auth/Register';
 import ScanQR from './components/Game/ScanQR';
 import Challenge from './components/Game/Challenge';
-import {refreshAccessToken} from './tokenUtils';
-import {jwtDecode} from 'jwt-decode';
+import Leaderboard from './components/Leaderboard';
+import { refreshAccessToken } from './tokenUtils';
+import { jwtDecode } from 'jwt-decode';
 
 function App() {
   const [userName, setUserName] = useState('');
@@ -137,6 +138,19 @@ function App() {
                 isAuthenticated ? (
                   <PrivateRoute>
                     <Challenge />
+                  </PrivateRoute>
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            {/* Nueva Ruta para el Leaderboard */}
+            <Route
+              path="/leaderboard"
+              element={
+                isAuthenticated ? (
+                  <PrivateRoute>
+                    <Leaderboard />
                   </PrivateRoute>
                 ) : (
                   <Navigate to="/login" replace />

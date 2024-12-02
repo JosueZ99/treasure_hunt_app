@@ -80,6 +80,7 @@ def get_user_data(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_leaderboard(request):
     leaderboard_data = Leaderboard.objects.select_related('user').order_by('-total_points')  # Orden descendente por puntos
     ranking = [
@@ -92,7 +93,6 @@ def get_leaderboard(request):
         for idx, entry in enumerate(leaderboard_data)
     ]
     return Response(ranking, status=status.HTTP_200_OK)
-    return Response({"error": "No autenticado"}, status=status.HTTP_401_UNAUTHORIZED)
 
 # Escanear código QR
 @api_view(['POST'])
