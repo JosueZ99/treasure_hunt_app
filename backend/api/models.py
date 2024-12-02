@@ -47,12 +47,13 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
-# Modelo Challenge
+# Modelo Challenge 
 class Challenge(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="challenges")
     question = models.TextField()
     correct_answer = models.CharField(max_length=255)
     points = models.PositiveIntegerField(default=10)
+    options = models.JSONField(default=list)  # Añadido para almacenar las opciones de respuesta
 
     def __str__(self):
         return f"Challenge at {self.location.name}"

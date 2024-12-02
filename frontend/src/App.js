@@ -8,16 +8,16 @@ import Logout from './components/Auth/Logout';
 import Home from './components/Home';
 import PrivateRoute from './components/PrivateRoute';
 import Register from './components/Auth/Register';
-import ScanQR from './components/Game/ScanQR'; // Importar nuevo componente ScanQR
-import Challenge from './components/Game/Challenge'; // Importar nuevo componente Challenge
-import { refreshAccessToken } from './tokenUtils';
-import { jwtDecode } from 'jwt-decode';
+import ScanQR from './components/Game/ScanQR';
+import Challenge from './components/Game/Challenge';
+import {refreshAccessToken} from './tokenUtils';
+import {jwtDecode} from 'jwt-decode';
 
 function App() {
   const [userName, setUserName] = useState('');
   const [userPoints, setUserPoints] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [redirectToLogin, setRedirectToLogin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const isTokenExpired = (token) => {
@@ -41,7 +41,7 @@ function App() {
           token = await refreshAccessToken();
         } catch (error) {
           console.error('No se pudo renovar el token:', error);
-          setRedirectToLogin(true);
+          setIsAuthenticated(false);
           return;
         }
       }
@@ -58,14 +58,14 @@ function App() {
         const data = await response.json();
         setUserName(data.name);
         setUserPoints(data.points);
-        setRedirectToLogin(false); // El usuario está autenticado, no redirigir
+        setIsAuthenticated(true);
       } else {
         console.error('Error al obtener los datos del usuario.');
-        setRedirectToLogin(true);
+        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('Error al conectar con el servidor:', error);
-      setRedirectToLogin(true);
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
@@ -110,40 +110,40 @@ function App() {
             <Route
               path="/home"
               element={
-                redirectToLogin ? (
-                  <Navigate to="/login" replace />
-                ) : (
+                isAuthenticated ? (
                   <PrivateRoute>
                     <Home />
                   </PrivateRoute>
+                ) : (
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/scan-qr"
               element={
-                redirectToLogin ? (
-                  <Navigate to="/login" replace />
-                ) : (
+                isAuthenticated ? (
                   <PrivateRoute>
                     <ScanQR />
                   </PrivateRoute>
+                ) : (
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/challenge/:token"
               element={
-                redirectToLogin ? (
-                  <Navigate to="/login" replace />
-                ) : (
+                isAuthenticated ? (
                   <PrivateRoute>
                     <Challenge />
                   </PrivateRoute>
+                ) : (
+                  <Navigate to="/login" replace />
                 )
               }
             />
-            <Route path="*" element={<Navigate to="/home" />} />
+            <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </Layout>
       </Router>
