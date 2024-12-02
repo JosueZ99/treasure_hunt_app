@@ -8,10 +8,10 @@ import Logout from './components/Auth/Logout';
 import Home from './components/Home';
 import PrivateRoute from './components/PrivateRoute';
 import Register from './components/Auth/Register';
+import ScanQR from './components/Game/ScanQR'; // Importar nuevo componente ScanQR
+import Challenge from './components/Game/Challenge'; // Importar nuevo componente Challenge
 import { refreshAccessToken } from './tokenUtils';
 import { jwtDecode } from 'jwt-decode';
-
-//Test commit de la nueva rama
 
 function App() {
   const [userName, setUserName] = useState('');
@@ -115,6 +115,30 @@ function App() {
                 ) : (
                   <PrivateRoute>
                     <Home />
+                  </PrivateRoute>
+                )
+              }
+            />
+            <Route
+              path="/scan-qr"
+              element={
+                redirectToLogin ? (
+                  <Navigate to="/login" replace />
+                ) : (
+                  <PrivateRoute>
+                    <ScanQR />
+                  </PrivateRoute>
+                )
+              }
+            />
+            <Route
+              path="/challenge/:token"
+              element={
+                redirectToLogin ? (
+                  <Navigate to="/login" replace />
+                ) : (
+                  <PrivateRoute>
+                    <Challenge />
                   </PrivateRoute>
                 )
               }
