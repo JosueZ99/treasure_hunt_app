@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import { useNavigate } from 'react-router-dom';
 
 // Importar imágenes
 import ecoImage from '../assets/images/carousel/eco.jpg';
@@ -12,6 +13,8 @@ import eco2Image from '../assets/images/carousel/eco2.jpg';
 import eco3Image from '../assets/images/carousel/eco3.jpg';
 
 const Home = () => {
+    const navigate = useNavigate();
+
     // Configuración del carrusel
     const carouselSettings = {
         dots: true,
@@ -20,6 +23,15 @@ const Home = () => {
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
+    };
+
+    // Funciones para manejar la navegación
+    const handleScanQR = () => {
+        navigate('/scan-qr');
+    };
+
+    const handleViewLeaderboard = () => {
+        navigate('/leaderboard');
     };
 
     return (
@@ -111,6 +123,7 @@ const Home = () => {
             <Fab 
                 color="secondary" 
                 aria-label="Leaderboard" 
+                onClick={handleViewLeaderboard} // Agregado manejador para ver leaderboard
                 sx={{ 
                     position: 'fixed', 
                     bottom: { xs: 60, md: 90 },
@@ -123,6 +136,7 @@ const Home = () => {
             <Fab 
                 color="primary" 
                 aria-label="QR Scanner" 
+                onClick={handleScanQR} // Agregado manejador para escanear QR
                 sx={{ 
                     position: 'fixed', 
                     bottom: { xs: 60, md: 90 },
