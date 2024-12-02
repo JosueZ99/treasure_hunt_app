@@ -6,6 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import Leaderboard from './Leaderboard';
+import { useNavigate } from 'react-router-dom';
 
 // Importar imágenes
 import eco1Image from '../assets/images/carousel/eco1.jpg';
@@ -25,6 +26,8 @@ const Home = () => {
     const handleBackToHome = () => {
         setShowLeaderboard(false);
     };
+    const navigate = useNavigate();
+
 
     // Configuración del carrusel
     const carouselSettings = {
@@ -37,6 +40,7 @@ const Home = () => {
         beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex), // Actualiza el índice
     };
 
+
     // Frases para cada imagen
     const ecoTips = [
         "Evita la deforestación. Cada árbol en Ecuador puede capturar hasta 22 kg de CO₂ al año.",
@@ -45,6 +49,16 @@ const Home = () => {
         "El Parque Nacional Yasuní es uno de los más biodiversos del mundo. Evita plásticos para proteger su vida silvestre."
 
     ];
+
+    // Funciones para manejar la navegación
+    const handleScanQR = () => {
+        navigate('/scan-qr');
+    };
+
+    const handleViewLeaderboard = () => {
+        navigate('/leaderboard');
+    };
+
 
     return (
         <Box
@@ -148,33 +162,32 @@ const Home = () => {
                         </Typography>
                     </Box>
 
-                    {/* Botones flotantes */}
-                    <Fab
-                        color="secondary"
-                        aria-label="Leaderboard"
-                        onClick={handleViewLeaderboard} // Aquí se activa la vista del ranking
-                        sx={{
-                            position: 'fixed',
-                            bottom: { xs: 60, md: 90 },
-                            left: 16
-                        }}
-                    >
-                        <LeaderboardIcon />
-                    </Fab>
+            {/* Iconos flotantes para acciones */}
+            <Fab 
+                color="secondary" 
+                aria-label="Leaderboard" 
+                onClick={handleViewLeaderboard} // Agregado manejador para ver leaderboard
+                sx={{ 
+                    position: 'fixed', 
+                    bottom: { xs: 60, md: 90 },
+                    left: 16 
+                }}
+            >
+                <LeaderboardIcon />
+            </Fab>
 
-                    <Fab
-                        color="primary"
-                        aria-label="QR Scanner"
-                        sx={{
-                            position: 'fixed',
-                            bottom: { xs: 60, md: 90 },
-                            right: 16
-                        }}
-                    >
-                        <QrCodeScannerIcon />
-                    </Fab>
-                </>
-            )}
+            <Fab 
+                color="primary" 
+                aria-label="QR Scanner" 
+                onClick={handleScanQR} // Agregado manejador para escanear QR
+                sx={{ 
+                    position: 'fixed', 
+                    bottom: { xs: 60, md: 90 },
+                    right: 16 
+                }}
+            >
+                <QrCodeScannerIcon />
+            </Fab>
         </Box>
     );
 };
