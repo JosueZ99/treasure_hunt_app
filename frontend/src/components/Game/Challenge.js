@@ -71,8 +71,7 @@ const Challenge = () => {
                 if (response.data.correct) {
                     setEarnedPoints(response.data.points);
                     console.log("Respuesta correcta. Intentando actualizar el progreso del usuario...");
-                    await updateProgress(); // Actualizar el progreso si la respuesta es correcta
-                    await fetchNextHint(); // Obtener la siguiente pista si la respuesta es correcta
+                    await updateProgress(response.data.points); // Actualizar progreso
                 }
             } else {
                 console.error("Error al validar la respuesta.");
@@ -83,8 +82,9 @@ const Challenge = () => {
             setFeedbackMessage("Error al validar la respuesta. Inténtalo de nuevo más tarde.");
         }
     };
+    
 
-    const updateProgress = async () => {
+    const updateProgress = async (points) => {
         console.log("Intentando actualizar el progreso del usuario...");
         try {
             const response = await axios.post(`${backendUrl}/api/update_user_progress/${token}/`, {}, {
@@ -92,17 +92,17 @@ const Challenge = () => {
                     Authorization: `Bearer ${localStorage.getItem('access_token')}`
                 }
             });
-
+    
             if (response.status === 200) {
                 console.log("Progreso del usuario actualizado con éxito:", response.data);
-                setFeedbackMessage((prev) => `${prev} ¡Has ganado ${earnedPoints} puntos!`);
+                setFeedbackMessage((prev) => `${prev} ¡Has ganado ${points} puntos!`);
             } else {
                 console.error("Error al actualizar el progreso del usuario.");
             }
         } catch (error) {
             console.error("Error al actualizar el progreso del usuario:", error);
         }
-    };
+    };    
 
     const fetchNextHint = async () => {
         console.log("Intentando obtener la siguiente pista...");
@@ -125,11 +125,30 @@ const Challenge = () => {
         }
     };
 
-    const handleNextHint = () => {
+    const handleNextHint = async () => {
         if (isHintShown) {
-            // Si la pista ya se mostró, regresar a home
             console.log("Pista mostrada, navegando a home...");
             navigate('/home');
+            return;
+        }
+    
+        console.log("Intentando obtener la siguiente pista...");
+        try {
+            const response = await axios.get(`${backendUrl}/api/get_next_hint/${token}/`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('access_token')}`
+                }
+            });
+    
+            if (response.status === 200) {
+                console.log("Pista obtenida con éxito:", response.data);
+                setHint(response.data.hint);
+                setIsHintShown(true); // Marcar que la pista ya ha sido mostrada
+            } else {
+                console.error("No se pudo obtener la siguiente pista.");
+            }
+        } catch (error) {
+            console.error("Error al obtener la pista:", error);
         }
     };
 
